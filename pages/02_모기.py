@@ -1,0 +1,82 @@
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+
+# ---------------------------
+# 데이터 불러오기
+# ---------------------------
+@st.cache_data
+def load_data():
+    df = pd.read_csv("mosquito_Indicator.csv")
+    df["date"] = pd.to_datetime(df["date"])
+    df["year"] = df["date"].dt.year
+    df["month"] = df["date"].dt.month
+    return df
+
+df = load_data()
+
+# ---------------------------
+# 사이드바
+# ---------------------------
+st.sidebar.title("🦟 모기지수 대시보드")
+st.sidebar.markdown("날짜 범위와 시각화 변수를 선택하세요.")
+
+start_date = st.sidebar.date_input("시작일", df["date"].min())
+end_date = st.sidebar.date_input("종료일", df["date"].max())
+
+# 날짜 필터링
+mask = (df["date"] >= pd.to_datetime(start_date)) & (df["date"] <= pd.to_datetime(end_date))
+filtered_df = df.loc[mask]
+
+# ---------------------------
+# 메인 영역
+# ---------------------------
+st.title("🦟 모기지수 & 기상요인 대시보드")
+st.markdown("**기간:** {} ~ {}".format(start_date, end_date))
+
+# 1️⃣ 시간에 따른 모기지수 추이
+st.subheader("📈 시간에 따른 모기지수 추이")
+fig1 = px.line(filtered_df, x="date", y="mosquito_Indicator",
+               title="모기지수 변화 추이",
+               labels={"date": "날짜", "mosquito_Indicator": "모기지수"},
+               template="plotly_white")
+st.plotly_chart(fig1, use_container_width=True)
+
+# 2️⃣ 온도별 모기지수 관계
+st.subheader("🌡️ 온도와 모기지수의 관계")
+temp_var = st.selectbox("기온 변수 선택", ["mean_T(℃)", "min_T(℃)", "max_T(℃)"])
+fig2 = px.scatter(filtered_df, x=temp_var, y="mosquito_Indicator",
+                  trendline="ols",
+                  title=f"{temp_var}와 모기지수 관계",
+                  labels={"mosquito_Indicator": "모기지수", temp_var: temp_var},
+                  template="plotly_white")
+st.plotly_chart(fig2, use_container_width=True)
+
+# 3️⃣ 강수량과 모기지수의 관계
+st.subheader("🌧️ 강수량과 모기지수의 관계")
+fig3 = px.scatter(filtered_df, x="rain(mm)", y="mosquito_Indicator",
+                  size="rain(mm)", color="mean_T(℃)",
+                  title="강수량과 모기지수의 관계",
+                  labels={"rain(mm)": "강수량(mm)", "mosquito_Indicator": "모기지수"},
+                  template="plotly_white")
+st.plotly_chart(fig3, use_container_width=True)
+
+# 4️⃣ 월별 평균 모기지수
+st.subheader("📅 월별 평균 모기지수")
+monthly_avg = df.groupby(["year", "month"])["mosquito_Indicator"].mean().reset_index()
+monthly_avg["연월"] = monthly_avg["year"].astype(str) + "-" + monthly_avg["month"].astype(str).str.zfill(2)
+
+fig4 = px.bar(monthly_avg, x="연월", y="mosquito_Indicator",
+              title="월별 평균 모기지수",
+              labels={"연월": "연-월", "mosquito_Indicator": "평균 모기지수"},
+              template="plotly_white")
+st.plotly_chart(fig4, use_container_width=True)
+
+# 5️⃣ 상관관계 히트맵
+st.subheader("📊 기상요인 간 상관관계")
+corr = df[["mosquito_Indicator", "rain(mm)", "mean_T(℃)", "min_T(℃)", "max_T(℃)"]].corr()
+fig5 = px.imshow(corr, text_auto=True, aspect="auto", title="상관관계 히트맵", template="plotly_white")
+st.plotly_chart(fig5, use_container_width=True)
+
+st.markdown("---")
+st.caption("📘 데이터 출처: mosquito_Indicator.csv | 개발: Streamlit + Plotly")
