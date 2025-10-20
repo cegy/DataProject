@@ -133,8 +133,8 @@ if submitted:
         st.warning("해당 MBTI에 대한 추천이 없습니다.")
 
 # 추가 안내
-st.sidebar.header("사용법 & 배포")
-st.sidebar.write("1. 이 파일을 streamlit_mbti_careers.py 로 저장하세요.\n2. 로컬에서 실행: `streamlit run streamlit_mbti_careers.py`\n3. Streamlit Cloud에 배포하려면 GitHub에 푸시한 뒤 Streamlit에 연결하세요.")
-st.sidebar.write("필요하면 추천 직업 목록을 편집하거나 더 많은 설명을 추가해 확장할 수 있습니다.")
+# st.sidebar.header("사용법 & 배포")
+# st.sidebar.write("1. 이 파일을 streamlit_mbti_careers.py 로 저장하세요.\n2. 로컬에서 실행: `streamlit run streamlit_mbti_careers.py`\n3. Streamlit Cloud에 배포하려면 GitHub에 푸시한 뒤 Streamlit에 연결하세요.")
+# st.sidebar.write("필요하면 추천 직업 목록을 편집하거나 더 많은 설명을 추가해 확장할 수 있습니다.")
 
-st.caption("앱 생성: Streamlit | 간단한 MBTI 기반 진로 추천 예시")
+# st.caption("앱 생성: Streamlit | 간단한 MBTI 기반 진로 추천 예시")
