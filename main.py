@@ -128,4 +128,58 @@ CAREER_MAP = {
         "간호 관리자 — 돌봄과 운영 관리 결합",
         "고객 성공/CS 매니저 — 관계 유지와 만족도 향상",
         "교육 행정/학교 운영 — 사람 중심 운영",
-        "이벤트 코디네이터 — 조화와 배려 기반
+        "이벤트 코디네이터 — 조화와 배려 기반 진행",
+    ],
+    "ENFJ": [
+        "교육자/리더십 코치 — 영감을 주는 멘토",
+        "PR/브랜드 매니저 — 메시지와 영향력 관리",
+        "사회적 기업가/커뮤니티 매니저 — 조직화와 공감",
+        "HR 디렉터 — 조직 문화와 개발 주도",
+        "정책·공공운영 — 사람 중심의 설계",
+    ],
+    "ENTJ": [
+        "경영진(CEO/CXO) — 전략 수립과 실행 주도",
+        "전략 컨설턴트 — 구조적 분석과 실행력",
+        "투자/VC 전문가 — 기회 판단과 포트폴리오 운영",
+        "사업개발/BD 디렉터 — 성장 전략 수립",
+        "프로덕트 디렉터 — 비전과 조직 운영 결합",
+    ],
+}
+
+# --- UI 구성 ---
+col1, col2 = st.columns([3, 1])
+with col1:
+    chosen = st.selectbox("당신의 MBTI를 선택하세요 👇", MBTI_LIST)
+
+with col2:
+    st.markdown("<div style='text-align:right'><span class='pill'>Tip</span></div>", unsafe_allow_html=True)
+    st.write("MBTI는 참고용입니다.")
+
+if chosen:
+    st.markdown(f"### 🔷 {chosen} 유형 추천 직업")
+    careers = CAREER_MAP.get(chosen, [])
+
+    if careers:
+        for i, c in enumerate(careers, 1):
+            st.markdown(f"<div class='career-box'><b>{i}. {c}</b></div>", unsafe_allow_html=True)
+
+        st.success("✨ 위 추천은 MBTI 성향을 기반으로 한 예시입니다. 개인의 흥미와 역량을 함께 고려하세요!")
+
+        # 다운로드(텍스트) — 줄바꿈은 \n 으로 처리
+        txt_lines = [f"MBTI: {chosen}", "추천 진로:"] + [f"- {c}" for c in careers]
+        txt_out = "\n".join(txt_lines)
+        st.download_button("📄 추천 목록 다운로드", txt_out, file_name=f"{chosen}_careers.txt")
+    else:
+        st.warning("해당 MBTI의 추천 진로가 없습니다.")
+
+# 사이드바
+st.sidebar.header("ℹ️ 사용법 & 배포")
+st.sidebar.write(
+    """
+1) MBTI를 선택하면 추천 직업 목록이 표시됩니다.
+2) 결과는 참고용이며, 실제 진로 선택은 다양한 요소를 고려하세요.
+3) 로컬: `streamlit run main.py`, Streamlit Cloud: GitHub 리포지토리 연결 후 배포.
+"""
+)
+st.sidebar.markdown("---")
+st.sidebar.caption("Developed with ❤️ using Streamlit")
